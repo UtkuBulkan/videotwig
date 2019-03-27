@@ -39,10 +39,10 @@
 
 ObjectDetector::ObjectDetector() : confidence_threshold(0.5),
 		mask_threshold(0.3),
-		class_definition_file("./mscoco_labels.names"),
-		colors_file("./colors.txt"),
-		text_graph_file("./mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"),
-		model_weights_file("./frozen_inference_graph.pb")
+		class_definition_file("../data/mscoco_labels.names"),
+		colors_file("../data/colors.txt"),
+		text_graph_file("../data/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"),
+		model_weights_file("../data/frozen_inference_graph.pb")
 {
 	std::ifstream classes_file_stream(class_definition_file.c_str());
 	std::ifstream colors_file_stream(colors_file.c_str());
@@ -164,4 +164,37 @@ void ObjectDetector::process_frame(cv::Mat &frame) {
 	label = cv::format("Frame processing time: %.2f ms", t);
 	cv::putText(frame, label, cv::Point(0, 15), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
 	logger << syslog::level::info << "ObjectDetector process_frame end" << std::endl;
+}
+
+void ObjectDetector::loop(std::string filename) {
+	cv::Mat frame;
+	cv::VideoCapture capture;
+
+	logger <<  "Hello from TensorFlow C library version : " << TF_Version() << std::endl;
+	logger << syslog::level::debug << "Opening file : " << filename.c_str() << std::endl;
+
+	capture.open(filename);
+	if ( !capture.isOpened	() ) {
+		throw "Error opening file.\n";
+	}
+
+	cv::namedWindow("Camera1", cv::WINDOW_NORMAL);
+	cv::resizeWindow("Camera1", 640, 480);
+
+	while(1) {
+		logger << syslog::level::info << "Timestamp" << std::endl;
+
+		try {
+			capture >> frame;
+		} catch(cv::Exception ex) {
+			std::cout << ex.what() << std::endl;
+		} catch(...) {
+			std::cout << "Unknown exception" << std::endl;
+		}
+		logger << syslog::level::debug << "Frame resolution : " << frame.rows << "x" << frame.cols << std::endl;
+
+		process_frame(frame);
+		cv::imshow("Camera1", frame);
+		if(cv::waitKey(30) >= 0) break;
+	}
 }

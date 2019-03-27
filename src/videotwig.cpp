@@ -33,13 +33,17 @@
 #include <string>
 #include <vector>
 #include <sstream>
-
 #include "syslog_cpp.h"
+#include "ObjectDetection.h"
+
 syslog::syslog_ostream logger;
 
 int main()
 {
+	ObjectDetector obj;
 
 	logger.setlogmask(syslog::level::debug);
 	logger.openlog("videotwig");
+
+	obj.loop("/home/utku/superman/testcontent/single/carvideo.mp4");
 }

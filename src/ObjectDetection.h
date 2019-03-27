@@ -25,6 +25,7 @@
 */
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn.hpp>
+#include <string>
 
 class ObjectDetector {
 public:
@@ -33,6 +34,7 @@ public:
 	void process_frame(cv::Mat &frame);
 	void draw_box(cv::Mat& frame, int classId, float conf, cv::Rect box, cv::Mat& objectMask);
 	void post_process(cv::Mat& frame, const std::vector<cv::Mat>& outs);
+	void loop(std::string filename);
 private:
 	// Initialize the parameters
 	float confidence_threshold; // Confidence threshold
